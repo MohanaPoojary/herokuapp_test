@@ -6,51 +6,68 @@ def test_form():
         page = browser.new_page()
         page.goto("https://formy-project.herokuapp.com/form")
         
-        heading_text=page.locator("h1").text_content()
-        assert heading_text == "Complete Web Form"
+        # Verify heading text
+        form_heading=page.locator("h1")
+        expect(form_heading).to_have_text("Complete Web Form")
         print("Heading verified successfully")
         
-        # or
-        # heading_text=page.locator("h1")
-        # expect(heading).to_have_text("Complete Web Form")
-
-        # fill the first name, last name, job title by using css selector
-        first_name_heading=page.locator("label:has-text('First name')")
+        # Verify label for first name input
+        first_name_heading=page.locator("label[for='first-name']")
         expect(first_name_heading).to_have_text("First name")
-        page.fill("#first-name", "Mohan")
 
-        last_name_heading=page.locator("label:has-text('Last name')")
+        # Verify placeholder text in first name input field
+        first_name_input_id=page.locator("#first-name")
+        placeholder_text=first_name_input_id.get_attribute("placeholder")
+        assert placeholder_text=="Enter first name", f"expected placeholder 'Enter first name', but got '{placeholder_text}'"
+        print("Placeholder verified successfully")
+
+        # fill input name
+        first_name_input_id.fill("Mohan")
+        print("First name filled successfully")
+
+        # Verify label for last name input
+        last_name_heading=page.locator("label[for='last-name']")
         expect(last_name_heading).to_have_text("Last name")
-        page.fill("#last-name", "Poojary")
 
-        job_title_heading=page.locator("label:has-text('Job title')")
-        expect(job_title_heading).to_have_text("Job title")
-        page.fill("#job-title", "Engineer")
+        # Verify placeholder text in last name input field
+        last_name_input_id=page.locator("#last-name")
+        placeholder_text=last_name_input_id.get_attribute("placeholder")
+        assert placeholder_text=="Enter last name", f"expected placeholder 'Enter last name', but got '{placeholder_text}'"
+        print("Placeholder verified successfully")
 
-        radio_button_text = page.locator("label:has-text('Highest level of education')")
-        expect(radio_button_text).to_have_text("Highest level of education")
-        print("radio_button_heading has text Highest level of education")
+        # fill input name
+        last_name_input_id.fill("Poojary")
+        print("Last name filled successfully")
 
-        # click on radio button
-        page.click("#radio-button-3")
-        
-        # checkbox_heading=page.locator("label:has-text('Sex')")
-        # expect(job_title_heading).to_have_text("Sex")
+        job_title_text=page.locator("label[for='job-title']")
+        expect(job_title_text).to_have_text("Job title")
+        print("Job title text verified successfully")
 
-        #click on checkbox
-        page.click("#checkbox-1")
+        job_title_id=page.locator("#job-title")
+        placeholder_text=job_title_id.get_attribute("placeholder")
+        assert placeholder_text=="Enter your job title", f"got the job title '{placeholder_text}', instead of 'Enter your job title'"
 
-        dropdown_heading=page.locator("label:has-text('Years of experience:')")
-        expect(job_title_heading).to_have_text("Years of experience:")
+        job_title_id.fill("Engineer")
+        print("JOb title filled successfully")
 
-        #select dropdown
-        select_option = page.locator("#education option[selected]")
-        expect(select_option).to_have_text("Select an option")
-        print("Dropdown has the default 'Select an option' text")
-        page.select_option("#select-menu", value="2")
-        print("Dropdown option selected by value.")
+        # radio-button
+        radio_button=page.locator("#radio-button-1").click()
+        print("Radio button clicked successfully")
 
+        # checkbox
+        checkbox=page.locator("#checkbox-1").click()
+        print("Checkbox clicked successfully")
 
-        page.wait_for_timeout(2000)
+        year_of_exp_label_text=page.locator("label[for='select-menu']")
+        expect(year_of_exp_label_text).to_have_text("Years of experience:")
 
-test_form()
+         # Locate the dropdown
+        options = page.locator("#select-menu")
+        option_texts=options.all_text_contents().strip()
+
+        print("Dropdown options:", option_texts)
+
+        expected_options= ["Select an option", "0-1", "2-4", "5-9", "10+"]
+        assert option_texts == expected_options, f"Expected {expected_options}, but got {option_texts}"
+
+test_form()        
